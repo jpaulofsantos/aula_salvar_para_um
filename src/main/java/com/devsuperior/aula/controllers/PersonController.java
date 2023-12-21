@@ -1,5 +1,6 @@
 package com.devsuperior.aula.controllers;
 
+import com.devsuperior.aula.dto.PersonDTO;
 import com.devsuperior.aula.dto.PersonDepartmentDTO;
 import com.devsuperior.aula.services.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +23,15 @@ public class PersonController {
         return ResponseEntity.ok(dto); //customizando o response
     }
 
+    //@PostMapping  //comentado para não conflitar com o insert abaixo
+    public ResponseEntity<PersonDepartmentDTO> insert(@RequestBody PersonDepartmentDTO dto) { //insert com o Department aninhado (DTO de Person contém um Department
+        dto = personService.insert(dto);
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(dto.getId()).toUri();
+        return ResponseEntity.created(uri).body(dto); //passando o cod HTTP 201 de created
+    }
+
     @PostMapping
-    public ResponseEntity<PersonDepartmentDTO> insert(@RequestBody PersonDepartmentDTO dto) { //o corpo da requisição que chega, entra nesse parametro e instancia um novo dto. @Valid verifica
+    public ResponseEntity<PersonDTO> insert(@RequestBody PersonDTO dto) { //insert apenas com o id do departament, sem ter um Department no DTO
         dto = personService.insert(dto);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(dto.getId()).toUri();
         return ResponseEntity.created(uri).body(dto); //passando o cod HTTP 201 de created
